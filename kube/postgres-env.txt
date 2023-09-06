@@ -1,0 +1,4 @@
+# Postgres
+POSTGRES_USER=michael
+POSTGRES_PASSWORD=michael2023*
+POSTGRES_DB=testiapps

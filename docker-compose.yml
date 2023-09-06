@@ -1,0 +1,46 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
+
+  cache:
+    image: redis
+    ports:
+      - "${REDIS_EXTERNAL_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - my_network
+
+  web:
+    build: .
+    ports:
+      - "${FASTAPI_EXTERNAL_PORT}:${FASTAPI_INTERNAL_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - cache
+    networks:
+      - my_network
+    volumes:
+      - ./alembic:/app/alembic
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  my_network:
+    driver: bridge
